@@ -1,23 +1,29 @@
 import 'dart:ui';
+import 'package:flame/sprite.dart';
 import 'package:flappybird/FlappyBird.dart';
 
 class Player {
   Rect playerRect;
-  Paint playerPaint;
   final FlappyBird game;
   bool jumping;
   int jumpTime;
+  List<Sprite> flyingSprite;
+  double flyingSpriteIndex = 0;
 
   Player(this.game, double x, double y) {
     playerRect = Rect.fromLTWH(x, y, game.tileSize * 2, game.tileSize * 2);
-    playerPaint = Paint();
-    playerPaint.color = Color(0xff6ab04c);
+
+    flyingSprite = List<Sprite>();
+    flyingSprite.add(Sprite('redbird-downflap.png'));
+    flyingSprite.add(Sprite('redbird-midflap.png'));
+    flyingSprite.add(Sprite('redbird-upflap.png'));
+
     this.jumping = false;
     this.jumpTime = 0;
   }
 
   void render(Canvas c) {
-    c.drawRect(playerRect, playerPaint);
+    flyingSprite[flyingSpriteIndex.toInt()].renderRect(c, playerRect);
   }
 
   void update(double t) {
@@ -37,6 +43,11 @@ class Player {
             playerRect.translate(0, game.screenSize.height - playerRect.bottom);
       }
       jumpTime = 0;
+    }
+
+    flyingSpriteIndex += 20 * t;
+    if (flyingSpriteIndex >= 3) {
+      flyingSpriteIndex -= 3;
     }
   }
 
