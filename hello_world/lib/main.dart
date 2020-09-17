@@ -1,7 +1,6 @@
 import 'package:flame/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flame/flame.dart';
 import 'package:flappybird/FlappyBird.dart';
 
@@ -11,6 +10,8 @@ void main() async {
   Util flameUtil = Util();
   await flameUtil.fullScreen();
   await flameUtil.setOrientation(DeviceOrientation.portraitUp);
+
+  Size size = await Flame.util.initialDimensions();
 
   Flame.images.loadAll(<String>[
     '0.png',
@@ -41,10 +42,6 @@ void main() async {
     'yellowbird-upflap.png'
   ]);
 
-  FlappyBird game = new FlappyBird();
+  FlappyBird game = new FlappyBird(size);
   runApp(game.widget);
-
-  TapGestureRecognizer tapper = TapGestureRecognizer();
-  tapper.onTapDown = game.onTapDown;
-  flameUtil.addGestureRecognizer(tapper);
 }

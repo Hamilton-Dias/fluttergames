@@ -1,25 +1,26 @@
 import 'dart:ui';
+import 'package:flame/components/component.dart';
 import 'package:flame/sprite.dart';
-import 'package:flappybird/FlappyBird.dart';
 
-class Background {
-  final FlappyBird game;
+class Background extends Component {
   Sprite bgSprite;
   Rect bgRect;
 
-  Background(this.game) {
+  Background(Size size) {
     bgSprite = Sprite('background-day.png');
     bgRect = Rect.fromLTWH(
       0,
       0,
-      game.screenSize.width,
-      game.screenSize.height,
+      size.width,
+      size.height,
     );
   }
 
+  @override
   void render(Canvas c) {
     bgSprite.renderRect(c, bgRect);
   }
 
+  @override
   void update(double t) {}
 }
