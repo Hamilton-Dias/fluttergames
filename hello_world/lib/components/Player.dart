@@ -1,23 +1,21 @@
 import 'dart:ui';
+import 'package:flame/anchor.dart';
 import 'package:flame/animation.dart';
 import 'package:flame/components/animation_component.dart';
 import 'package:flame/components/component.dart';
+import 'package:flame/position.dart';
 import 'package:flame/sprite.dart';
 import 'package:flappybird/FlappyBird.dart';
 
 class Player extends Component {
-  Rect playerRect;
   final FlappyBird game;
-  bool jumping;
-  bool move;
-  int jumpTime;
+  final GRAVITY = 400.0;
+  final BOOST = -300.0;
   List<Sprite> flyingSprite;
-  double flyingSpriteIndex = 0;
   AnimationComponent playerAnimated;
+  double speedY;
 
   Player(this.game, double x, double y) {
-    playerRect = Rect.fromLTWH(x, y, game.tileSize * 2, game.tileSize * 2);
-
     flyingSprite = List<Sprite>();
     flyingSprite.add(Sprite('redbird-downflap.png'));
     flyingSprite.add(Sprite('redbird-midflap.png'));
@@ -28,13 +26,21 @@ class Player extends Component {
         game.tileSize * 2,
         new Animation.spriteList(flyingSprite, stepTime: 0.1));
 
+    this.initialize(x, y);
+  }
+
+  void initialize(double x, double y) {
     this.playerAnimated.x = x;
     this.playerAnimated.y = y;
+    this.playerAnimated.anchor = Anchor.center;
 
-    this.move = false;
-    this.jumping = false;
-    this.jumpTime = 0;
+    this.speedY = 0.0;
+    this.playerAnimated.angle = 0;
+
+    game.gameOver();
   }
+
+  Position get velocity => Position(300.0, this.speedY);
 
   @override
   void render(Canvas c) {
@@ -43,36 +49,24 @@ class Player extends Component {
 
   @override
   void update(double t) {
-    if (this.move) {
-      if (jumping) {
-        playerRect = playerRect.translate(0, -game.tileSize * 12 * t);
-        playerAnimated.y += -game.tileSize * 12 * t;
-        if (playerRect.top < 0) {
-          playerRect = playerRect.translate(0, -playerRect.top);
-        }
-        this.jumpTime++;
-        if (jumpTime > 25) {
-          jumping = false;
-        }
-      } else {
-        playerRect = playerRect.translate(0, game.tileSize * 12 * t);
-        playerAnimated.y += game.tileSize * 12 * t;
-        if (playerRect.bottom > game.screenSize.height) {
-          playerRect = playerRect.translate(
-              0, game.screenSize.height - playerRect.bottom);
-        }
-        jumpTime = 0;
-      }
+    if (game.gamePaused) return;
 
-      playerAnimated.update(t);
+    playerAnimated.y += this.speedY * t - GRAVITY * t * t / 2;
+    this.speedY += GRAVITY * t;
+
+    if (playerAnimated.y > game.screenSize.height) {
+      this.initialize(
+          this.game.screenSize.width / 3, this.game.screenSize.height / 2);
     }
+
+    if (playerAnimated.y < this.game.tileSize)
+      playerAnimated.y = this.game.tileSize;
+
+    playerAnimated.angle = velocity.angle();
+    playerAnimated.update(t);
   }
 
   void onTap() {
-    if (!this.move) {
-      this.move = true;
-      return;
-    }
-    this.jumping = true;
+    this.speedY = BOOST;
   }
 }

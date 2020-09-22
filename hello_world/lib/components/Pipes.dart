@@ -1,31 +1,36 @@
-/*import 'dart:ui';
+import 'dart:ui';
+import 'package:flame/components/component.dart';
 import 'package:flame/sprite.dart';
 import 'package:flappybird/FlappyBird.dart';
 
-class Pipes {
+class Pipes extends Component {
   final FlappyBird game;
   Rect upperPipeCollidor;
   Rect lowerPipeCollidor;
-  bool isOffScreen;
   Sprite upperPipe;
-  Sprite lowerPiper;
+  Sprite lowerPipe;
+  double speedX;
 
-  Pipes(this.game, double upperHeight, double lowerHeight) {
-    //  TODO: lembrar que o zero é em cima!!!
-    this.isOffScreen = false;
+  Pipes(this.game, double height) {
+    lowerPipeCollidor = Rect.fromLTWH(game.screenSize.width,
+        game.screenSize.height - height, game.tileSize * 3.2, height);
 
-    upperPipeCollidor = Rect.fromLTWH(
-        0, game.screenSize.height, -upperHeight, game.tileSize * 4);
-    //lowerPipeCollidor = Rect.fromLTWH(0, 0, lowerHeight, game.tileSize * 4);
+    upperPipeCollidor = Rect.fromLTWH(game.screenSize.width, 0,
+        game.tileSize * 3.2, game.screenSize.height - height - 250.0);
 
-    upperPipe = new Sprite('pipe-green.png');
-    //lowerPiper = new Sprite('pipe-green.png');
+    lowerPipe = new Sprite('pipe-green.png');
+    upperPipe = new Sprite('pipe-green-down.png');
+
+    this.speedX = 150.0;
   }
 
   void render(Canvas c) {
     upperPipe.renderRect(c, upperPipeCollidor);
-    //lowerPiper.renderRect(c, lowerPipeCollidor);
+    lowerPipe.renderRect(c, lowerPipeCollidor);
   }
 
-  void update(double t) {}
-}*/
+  void update(double t) {
+    lowerPipeCollidor = lowerPipeCollidor.translate(-this.speedX * t, 0);
+    upperPipeCollidor = upperPipeCollidor.translate(-this.speedX * t, 0);
+  }
+}

@@ -25,21 +25,13 @@ void main() async {
     '8.png',
     '9.png',
     'background-day.png',
-    'background-night.png',
     'base.png',
-    'bluebird-downflap.png',
-    'bluebird-midflap.png',
-    'bluebird-upflap.png',
     'gameover.png',
     'message.png',
     'pipe-green.png',
-    'pipe-red.png',
     'redbird-downflap.png',
     'redbird-midflap.png',
-    'redbird-upflap.png',
-    'yellowbird-downflap.png',
-    'yellowbird-midflap.png',
-    'yellowbird-upflap.png'
+    'redbird-upflap.png'
   ]);
 
   FlappyBird game = new FlappyBird(size);
