@@ -6,6 +6,9 @@ import 'package:flame/components/component.dart';
 import 'package:flame/position.dart';
 import 'package:flame/sprite.dart';
 import 'package:flappybird/FlappyBird.dart';
+import 'package:flappybird/components/Background.dart';
+
+import 'Pipes.dart';
 
 class Player extends Component {
   final FlappyBird game;
@@ -36,8 +39,6 @@ class Player extends Component {
 
     this.speedY = 0.0;
     this.playerAnimated.angle = 0;
-
-    game.gameOver();
   }
 
   Position get velocity => Position(300.0, this.speedY);
@@ -55,8 +56,7 @@ class Player extends Component {
     this.speedY += GRAVITY * t;
 
     if (playerAnimated.y > game.screenSize.height) {
-      this.initialize(
-          this.game.screenSize.width / 3, this.game.screenSize.height / 2);
+      game.gameOver();
     }
 
     if (playerAnimated.y < this.game.tileSize)
@@ -64,9 +64,41 @@ class Player extends Component {
 
     playerAnimated.angle = velocity.angle();
     playerAnimated.update(t);
+
+    checkCollisions();
   }
 
   void onTap() {
     this.speedY = BOOST;
+  }
+
+  void checkCollisions() {
+    for (var component in this.game.components) {
+      if (component is Player || component is Background) continue;
+
+      Pipes currPipe = component;
+
+      //Colisão com os canos superiores
+      if (playerAnimated.x - game.tileSize < currPipe.upperPipeCollidor.right &&
+          playerAnimated.x - game.tileSize + playerAnimated.width >
+              currPipe.upperPipeCollidor.left &&
+          playerAnimated.y - game.tileSize <
+              currPipe.upperPipeCollidor.bottom &&
+          playerAnimated.y - game.tileSize + playerAnimated.height >
+              currPipe.upperPipeCollidor.top) {
+        this.game.gameOver();
+      }
+
+      //Colisão com os canos inferioes
+      if (playerAnimated.x - game.tileSize < currPipe.lowerPipeCollidor.right &&
+          playerAnimated.x - game.tileSize + playerAnimated.width >
+              currPipe.lowerPipeCollidor.left &&
+          playerAnimated.y - game.tileSize <
+              currPipe.lowerPipeCollidor.bottom &&
+          playerAnimated.y - game.tileSize + playerAnimated.height >
+              currPipe.lowerPipeCollidor.top) {
+        this.game.gameOver();
+      }
+    }
   }
 }

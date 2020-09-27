@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flame/flame.dart';
 import 'package:flappybird/FlappyBird.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SharedPreferences storage = await SharedPreferences.getInstance();
 
   Util flameUtil = Util();
   await flameUtil.fullScreen();
@@ -25,15 +28,15 @@ void main() async {
     '8.png',
     '9.png',
     'background-day.png',
-    'base.png',
     'gameover.png',
     'message.png',
     'pipe-green.png',
+    'pipe-green-down.png',
     'redbird-downflap.png',
     'redbird-midflap.png',
     'redbird-upflap.png'
   ]);
 
-  FlappyBird game = new FlappyBird(size);
+  FlappyBird game = new FlappyBird(size, storage);
   runApp(game.widget);
 }

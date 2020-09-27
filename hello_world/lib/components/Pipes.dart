@@ -3,7 +3,7 @@ import 'package:flame/components/component.dart';
 import 'package:flame/sprite.dart';
 import 'package:flappybird/FlappyBird.dart';
 
-class Pipes extends Component {
+class Pipes extends PositionComponent {
   final FlappyBird game;
   Rect upperPipeCollidor;
   Rect lowerPipeCollidor;
@@ -29,8 +29,15 @@ class Pipes extends Component {
     lowerPipe.renderRect(c, lowerPipeCollidor);
   }
 
+  @override
   void update(double t) {
+    if (game.gamePaused) return;
+
     lowerPipeCollidor = lowerPipeCollidor.translate(-this.speedX * t, 0);
     upperPipeCollidor = upperPipeCollidor.translate(-this.speedX * t, 0);
+
+    if (this.lowerPipeCollidor.right < 0) {
+      this.game.markToRemove(this);
+    }
   }
 }
